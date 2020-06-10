@@ -4,6 +4,12 @@
 #include <climits>
 #include <cstdint>
 
+#if !defined(CHAR_BIT)
+#error Need defined 'CHAR_BIT' macro
+#endif
+
+static_assert (CHAR_BIT == 8, "CHAR_BIT != 8");
+
 namespace base_coder
 {
 

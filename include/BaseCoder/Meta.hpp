@@ -2,11 +2,11 @@
 #define BASECODER_META_HPP
 
 #include <climits>
+#include <type_traits>
+
 #if !defined(CHAR_BIT)
 #error Need defined 'CHAR_BIT' macro
 #endif
-
-#include <type_traits>
 
 static_assert (CHAR_BIT == 8, "CHAR_BIT != 8");
 
