@@ -16,29 +16,6 @@ namespace base_coder
 namespace detail
 {
 
-template<typename T, unsigned long long shiftValue, bool ...values>
-struct ShiftSequence;
-
-template<typename T, unsigned long long shiftValue, bool flag, bool ...flags>
-struct ShiftSequence<T, shiftValue, flag, flags...>
-{
-public:
-	static constexpr T value = (static_cast<T>(flag) << shiftValue)
-			| ShiftSequence<T, shiftValue - 1, flags...>::value;
-};
-
-template<typename T, unsigned long long shiftValue>
-struct ShiftSequence<T, shiftValue>
-{
-	static constexpr T value = 0;
-};
-
-template<typename T, bool ...flags>
-struct MaskCreator
-{
-	static constexpr T value = detail::ShiftSequence<T, sizeof...(flags) - 1, flags...>::value;
-};
-
 template<unsigned long long bits>
 struct ChooseNumber
 {
@@ -70,19 +47,19 @@ struct ChooseNumber
 		>
 	>;
 
-	static_assert(!std::is_same_v<Type, void>, "Invalid bits");
+	static_assert(!std::is_same_v<Type, void>, "Invalid input count bits");
 };
 
 template<unsigned long long countUppedBits>
-struct SpetializedMaskCreator
+struct MaskCreator
 {
 	using Type = typename ChooseNumber<countUppedBits>::Type;
 	static constexpr Type value = (static_cast<Type>(true) << (countUppedBits - 1))
-			| SpetializedMaskCreator<countUppedBits - 1>::value;
+			| MaskCreator<countUppedBits - 1>::value;
 };
 
 template<>
-struct SpetializedMaskCreator<0>
+struct MaskCreator<0>
 {
 	static constexpr bool value = false;
 };
@@ -94,7 +71,7 @@ using NumberType = typename detail::ChooseNumber<countUppedBits>::Type;
 
 template<unsigned long long countUppedBits>
 constexpr NumberType<countUppedBits> uppedMask =
-		detail::SpetializedMaskCreator<countUppedBits>::value;
+		detail::MaskCreator<countUppedBits>::value;
 
 } // namespace base_coder
 
