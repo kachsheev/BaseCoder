@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <utility>
+#include <array>
 
 namespace base_coder
 {
@@ -27,7 +28,10 @@ public:
 	static constexpr auto alphabetSize = Trait::alphabetSize;
 	static constexpr auto pad = Trait::pad;
 	static constexpr auto indexBitSize = Trait::indexBitSize;
+
+	static constexpr auto indexBufferSize = Trait::indexBufferSize;
 	static constexpr auto indexBufferSizeInBits = Trait::indexBufferSizeInBits;
+	static constexpr auto inputBufferSize = Trait::inputBufferSize;
 
 	///
 	/// \brief encodeSize
@@ -110,10 +114,10 @@ public:
 protected:
 	using Buffer = NumberType<indexBufferSizeInBits>;
 
-	using EncodeInput = typename Trait::EncodeInput;
-	using EncodeOutput = typename Trait::EncodeOutput;
-	using DecodeInput = typename Trait::DecodeInput;
-	using DecodeOutput = typename Trait::DecodeOutput;
+	using EncodeInput = std::array<std::uint8_t, inputBufferSize>;
+	using EncodeOutput = std::array<std::uint8_t, indexBufferSize>;
+	using DecodeInput = EncodeOutput;
+	using DecodeOutput = EncodeInput;
 
 	///
 	/// \brief coreEncode
@@ -187,6 +191,12 @@ private:
 	template<typename CodeContainer>
 	CodeContainer makeCodeContainer() const;
 };
+
+using Base64 = BaseCoder<Base64Traits>;
+using Base64Hex = BaseCoder<Base64HexTraits>;
+using Base32 = BaseCoder<Base32Traits>;
+using Base32Hex = BaseCoder<Base32HexTraits>;
+using Base16 = BaseCoder<Base16Traits>;
 
 }
 

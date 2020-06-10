@@ -1,7 +1,6 @@
 #ifndef BASECODER_BASECODER_TRAITS_HPP
 #define BASECODER_BASECODER_TRAITS_HPP
 
-#include <array>
 #include <climits>
 #include <cstdint>
 
@@ -109,12 +108,6 @@ struct Traits : public AlphabetTraits<TYPE, SUBTYPE>
 	static constexpr std::size_t indexBufferSizeInBits = indexBitSize * indexBufferSize;
 
 	static constexpr std::size_t inputBufferSize = indexBufferSizeInBits / CHAR_BIT;
-
-	using EncodeInput = std::array<std::uint8_t, inputBufferSize>;
-	using EncodeOutput = std::array<std::uint8_t, indexBufferSize>;
-
-	using DecodeInput = EncodeOutput;
-	using DecodeOutput = EncodeInput;
 };
 
 using Base64Traits = Traits<Type::Base64, Subtype::Common>;
