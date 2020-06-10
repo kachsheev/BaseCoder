@@ -418,17 +418,4 @@ CodeContainer BaseCoder<Trait>::makeCodeContainer() const
 
 } // namespace base_coder
 
-//#include <vector>
-//#include <functional>
-
-//void func()
-//{
-//	std::vector<uint8_t> value;
-//	base_coder::templates::BaseCoder< base_coder::templates::Base64Trait > baseCoder;
-//	baseCoder.encode(
-//			base_coder::templates::makeView(std::cref(value))
-//			, base_coder::templates::makeView(std::ref(value))
-//	);
-//}
-
 #endif // BASECODER_HPP
