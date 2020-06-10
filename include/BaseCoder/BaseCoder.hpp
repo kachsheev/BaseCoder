@@ -130,46 +130,54 @@ protected:
 	DecodeOutput coreDecode(DecodeInput data) const;
 
 private:
+	///
+	/// \brief The FakeIterator class
+	/// \tparam T
+	/// \tparam Callable
+	///
 	template<typename T, typename Callable>
 	class FakeIterator
 	{
 	public:
-		FakeIterator(Callable &&callable) : call{ std::move(callable) }
-		{}
+		///
+		/// \brief Constructtor
+		/// \param callable
+		///
+		FakeIterator(Callable &&callable);
 
-		T &operator*()
-		{
-			call();
-			return t;
-		}
+		///
+		/// \brief operator*
+		/// \return
+		///
+		T &operator*();
 
-		auto &operator++()
-		{
-			return *this;
-		}
+		///
+		/// \brief operator++
+		/// \return
+		///
+		FakeIterator<T, Callable> &operator++();
+
 	private:
-		T t{};
-		Callable call;
+		T t{}; ///<
+		Callable call; ///<
 	};
+
+
+	///
+	/// \brief makeFakeIterator
+	/// \param callable
+	/// \return
+	///
 	template<typename T, typename Callable>
-	static auto makeFakeIterator(T, Callable &&callable)
-	{
-		return FakeIterator<T, Callable>(std::move(callable));
-	}
+	static FakeIterator<T, Callable> makeFakeIterator(T, Callable &&callable);
 
+private:
+	///
+	/// \brief checkIteratorType
+	/// \tparam Iterator
+	///
 	template<typename Iterator>
-	constexpr void checkIteratorType() const
-	{
-		using IteratorReturnType = std::remove_cv_t< std::remove_reference_t<
-			decltype(*std::declval<Iterator>())
-		> >;
-		static_assert(std::is_same_v<AlphabetType, IteratorReturnType>
-				|| std::is_same_v<std::make_signed_t<AlphabetType>, IteratorReturnType>
-				|| std::is_same_v<std::make_unsigned_t<AlphabetType>, IteratorReturnType>
-				, ""
-		);
-	}
-
+	static constexpr void checkIteratorType();
 
 	///
 	/// \brief Making and initialize code containers
@@ -332,6 +340,55 @@ void BaseCoder<Trait>::decode(const Container &container
 }
 
 // private
+
+// FakeIterator
+
+template<typename Trait>
+template<typename T, typename Callable>
+BaseCoder<Trait>::FakeIterator<T, Callable>::FakeIterator(Callable &&callable)
+		: call{ std::move(callable) }
+{}
+
+template<typename Trait>
+template<typename T, typename Callable>
+T &BaseCoder<Trait>::FakeIterator<T, Callable>::operator*()
+{
+	call();
+	return t;
+}
+
+template<typename Trait>
+template<typename T, typename Callable>
+typename BaseCoder<Trait>::template FakeIterator<T, Callable> &
+BaseCoder<Trait>::FakeIterator<T, Callable>::operator++()
+{
+	return *this;
+}
+
+template<typename Trait>
+template<typename T, typename Callable>
+typename BaseCoder<Trait>::template FakeIterator<T, Callable>
+BaseCoder<Trait>::makeFakeIterator(T, Callable &&callable)
+{
+	return FakeIterator<T, Callable>(std::move(callable));
+}
+
+// BaseCoder
+
+template<typename Trait>
+template<typename Iterator>
+constexpr void BaseCoder<Trait>::checkIteratorType()
+{
+	using IteratorReturnType = std::remove_cv_t< std::remove_reference_t<
+		decltype(*std::declval<Iterator>())
+	> >;
+	static_assert(std::is_same_v<AlphabetType, IteratorReturnType>
+			|| std::is_same_v<std::make_signed_t<AlphabetType>, IteratorReturnType>
+			|| std::is_same_v<std::make_unsigned_t<AlphabetType>, IteratorReturnType>
+			, ""
+	);
+}
+
 
 template<typename Trait>
 typename BaseCoder<Trait>::EncodeOutput
